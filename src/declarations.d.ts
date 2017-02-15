@@ -12,3 +12,6 @@
   https://www.typescriptlang.org/docs/handbook/declaration-files/introduction.html
 */
 declare module '*';
+
+// Meteor Backend
+declare var __extends: any;
