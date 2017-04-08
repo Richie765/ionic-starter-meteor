@@ -1,23 +1,32 @@
-import { Component } from '@angular/core';
-import { MeteorReactive } from 'angular2-meteor';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { MeteorObservable, MongoObservable } from 'meteor-rxjs';
+import { Observable } from 'rxjs';
 
 import { NavController } from 'ionic-angular';
 
-export const Tasks = new Mongo.Collection('tasks');
+export const Tasks = new MongoObservable.Collection('tasks');
 
 @Component({
   selector: 'page-tasks',
   templateUrl: 'tasks.html'
 })
-export class TasksPage extends MeteorReactive {
-  tasks: any;
+export class TasksPage implements OnInit, OnDestroy {
+  private meteorSubscription: Subscription;
+  tasks: Observable<any>;
 
   constructor(public navCtrl: NavController) {
-    super();
+  }
 
-    this.subscribe("tasks");
+  ngOnInit() {
+    this.meteorSubscription = MeteorObservable.subscribe('tasks').subscribe(() => {
+      // Subscription is ready!
+      this.tasks = Tasks.find({}, { sort: { createdAt: -1 } });
+    });
+  }
 
-    this.tasks = Tasks.find({}, { sort: { createdAt: -1 } });
+  ngOnDestroy() {
+    this.meteorSubscription.unsubscribe();
   }
 
   toggleChecked(evt, task) {
@@ -27,7 +36,12 @@ export class TasksPage extends MeteorReactive {
     if(evt.checked !== task.checked) {
       // Don't toggle just yet, let it happen reactively
       evt.checked = task.checked;
-      this.call('tasks.setChecked', task._id, !task.checked);
+
+      MeteorObservable.call('tasks.setChecked', task._id, !task.checked).subscribe(response => {
+        // Handle success and response from server!
+      }, (err) => {
+        // Handle error
+      });
     }
   }
 }

@@ -9,7 +9,7 @@
 <ion-content padding>
 
   <ion-list *ngIf="tasks">
-    <ion-item *ngFor="let task of tasks">
+    <ion-item *ngFor="let task of tasks | async">
       <ion-label>{{ task.text }} ({{ task.username }})</ion-label>
       <ion-checkbox [checked]="task.checked" (ionChange)="toggleChecked($event, task)"></ion-checkbox>
     </ion-item>

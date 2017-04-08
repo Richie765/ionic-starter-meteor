@@ -1,6 +1,9 @@
-import { NgModule, ErrorHandler, IterableDiffers } from '@angular/core';
+import { NgModule, ErrorHandler } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
 import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
-import { DefaultIterableDifferFactory, MongoCursorDifferFactory } from 'angular2-meteor'; // Meteor Backend
+
+import { StatusBar } from '@ionic-native/status-bar';
+import { SplashScreen } from '@ionic-native/splash-screen';
 
 import { MyApp } from './app.component';
 import { AboutPage } from '../pages/about/about';
@@ -8,16 +11,6 @@ import { ContactPage } from '../pages/contact/contact';
 import { HomePage } from '../pages/home/home';
 import { TasksPage } from '../pages/tasks/tasks';
 import { TabsPage } from '../pages/tabs/tabs';
-
-
-// Meteor Backend
-
-export function iteratorFactory() {
-  return new IterableDiffers([
-    new DefaultIterableDifferFactory(),
-    new MongoCursorDifferFactory()
-  ]);
-}
 
 @NgModule({
   declarations: [
@@ -29,6 +22,7 @@ export function iteratorFactory() {
     TabsPage
   ],
   imports: [
+    BrowserModule,
     IonicModule.forRoot(MyApp)
   ],
   bootstrap: [IonicApp],
@@ -42,7 +36,8 @@ export function iteratorFactory() {
   ],
   providers: [
     { provide: ErrorHandler, useClass: IonicErrorHandler },
-    { provide: IterableDiffers, useFactory: iteratorFactory }, // Meteor Backend
+    StatusBar,
+    SplashScreen,
   ]
 })
 export class AppModule {}
